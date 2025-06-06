@@ -326,12 +326,10 @@ export class StoryPresenter {
   async setupNotifications() {
     if ('Notification' in window && 'serviceWorker' in navigator) {
       try {
-        // Register service worker
-        const registration = await navigator.serviceWorker.register('/service-worker.js', {
-          scope: '/'
-        });
+        // Register service worker dengan path yang benar
+        const registration = await navigator.serviceWorker.register('/service-worker.js');
         console.log('Service Worker registered successfully:', registration);
-
+  
         const notificationButton = document.getElementById('notificationButton');
         if (!notificationButton) {
           console.error('Notification button not found in DOM');
