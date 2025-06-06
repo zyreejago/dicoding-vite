@@ -1,0 +1,18 @@
+{
+  "name": "story-sharing-app",
+  "version": "1.0.0",
+  "description": "A story sharing application with location features",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "idb": "^8.0.3",
+    "leaflet": "^1.7.1"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

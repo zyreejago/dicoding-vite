@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Berbagi Cerita</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./styles/main.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="#mainContent" class="skip-link">Langsung ke konten</a>
+      
+      <nav class="nav-container">
+        <div class="nav-brand">
+          <h1>Berbagi Cerita</h1>
+        </div>
+        <div class="nav-menu">
+          <a href="#/" class="nav-link">Beranda</a>
+          <a href="#/add" class="nav-link">Tambah Cerita</a>
+          <a href="#/login" class="nav-link" id="loginLink">Masuk</a>
+          <a href="#/register" class="nav-link" id="registerLink">Daftar</a>
+          <button id="logoutButton" class="nav-button" style="display: none;">Keluar</button>
+        </div>
+      </nav>
+    </header>
+
+    <main id="mainContent" tabindex="0">
+      <!-- Content will be dynamically inserted here -->
+    </main>
+
+    <footer class="app-footer">
+      <p>&copy; 2024 Aplikasi Berbagi Cerita. Hak Cipta Dilindungi.</p>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
+    <!-- Custom JS -->
+    <script type="module" src="./scripts/app.js"></script>
+  </body>
+</html>
