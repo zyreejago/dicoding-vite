@@ -5,6 +5,8 @@ const CACHE_NAME = 'story-app-v1';
 const urlsToCache = [
   '/',
   '/index.html',
+  '/assets/index.css', // Path setelah build oleh Vite
+  '/assets/index.js',  // Path setelah build oleh Vite
   '/images/icon-192x192.png',
   '/images/badge-72x72.png'
 ];
@@ -19,7 +21,14 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        // Cache each URL individually to prevent one failure from breaking all caching
+        return Promise.allSettled(
+          urlsToCache.map(url => 
+            cache.add(url).catch(error => {
+              console.error(`Failed to cache ${url}:`, error);
+            })
+          )
+        );
       })
   );
 });
