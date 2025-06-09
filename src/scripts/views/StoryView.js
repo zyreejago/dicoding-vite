@@ -146,6 +146,30 @@ applyViewTransitionNames() {
         window.location.hash = `/story/${storyId}`;
       });
     });
+  
+    // Event listener untuk tombol simpan story
+    const saveButtons = this.mainContent.querySelectorAll('.save-story-btn');
+    saveButtons.forEach(button => {
+      button.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const storyId = button.dataset.storyId;
+        const story = stories.find(s => s.id === storyId);
+        
+        if (story) {
+          // Panggil method untuk menyimpan story
+          if (this.presenter && this.presenter.saveStoryToIndexedDB) {
+            const success = await this.presenter.saveStoryToIndexedDB(story);
+            if (success) {
+              button.innerHTML = '<i class="fas fa-check"></i> Tersimpan';
+              button.disabled = true;
+              button.classList.add('saved');
+            } else {
+              alert('Gagal menyimpan story');
+            }
+          }
+        }
+      });
+    });
   }
 
   createStoryCard(story) {
@@ -162,6 +186,11 @@ applyViewTransitionNames() {
               <span>Lokasi: ${story.lat.toFixed(4)}, ${story.lon.toFixed(4)}</span>
             </div>
           ` : ''}
+          <div class="story-actions">
+            <button class="save-story-btn" data-story-id="${story.id}" onclick="event.stopPropagation()">
+              <i class="fas fa-save"></i> Simpan Story
+            </button>
+          </div>
         </div>
       </article>
     `;

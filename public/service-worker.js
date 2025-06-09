@@ -1,12 +1,10 @@
 // Cache name
 const CACHE_NAME = 'story-app-v1';
 
-// Assets to cache
+// Assets to cache - hanya cache file yang pasti ada
 const urlsToCache = [
   '/',
   '/index.html',
-  '/assets/index.css', // Path setelah build oleh Vite
-  '/assets/index.js',  // Path setelah build oleh Vite
   '/images/icon-192x192.png',
   '/images/badge-72x72.png'
 ];
@@ -14,14 +12,12 @@ const urlsToCache = [
 // Service Worker Lifecycle Events
 self.addEventListener('install', (event) => {
   console.log('Service Worker installing...');
-  // Skip waiting to activate immediately
   self.skipWaiting();
 
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        // Cache each URL individually to prevent one failure from breaking all caching
         return Promise.allSettled(
           urlsToCache.map(url => 
             cache.add(url).catch(error => {
@@ -35,7 +31,6 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   console.log('Service Worker activating...');
-  // Claim clients to ensure service worker controls all pages
   event.waitUntil(clients.claim());
 
   event.waitUntil(
@@ -103,7 +98,6 @@ self.addEventListener('notificationclick', (event) => {
     return;
   }
 
-  // This looks to see if the current is already open and focuses if it is
   event.waitUntil(
     clients.matchAll({
       type: 'window'
@@ -122,15 +116,90 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// Fetch event - serve from cache if available
+// Fetch event - strategi caching yang diperbaiki untuk Vite
 self.addEventListener('fetch', (event) => {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Skip requests to external APIs
+  if (event.request.url.includes('story-api.dicoding.dev')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
         if (response) {
+          console.log('Serving from cache:', event.request.url);
           return response;
         }
-        return fetch(event.request);
+
+        // Clone request karena request adalah stream
+        const fetchRequest = event.request.clone();
+
+        return fetch(fetchRequest).then((response) => {
+          // Check jika response valid
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+
+          // Clone response karena response adalah stream
+          const responseToCache = response.clone();
+          const url = event.request.url;
+
+          // Cache assets secara dinamis (CSS, JS, images)
+          if (url.includes('/assets/') || 
+              url.endsWith('.css') || 
+              url.endsWith('.js') ||
+              url.endsWith('.png') ||
+              url.endsWith('.jpg') ||
+              url.endsWith('.jpeg') ||
+              url.endsWith('.gif') ||
+              url.endsWith('.svg')) {
+            
+            console.log('Caching asset:', url);
+            caches.open(CACHE_NAME)
+              .then((cache) => {
+                cache.put(event.request, responseToCache);
+              })
+              .catch(error => {
+                console.error('Failed to cache asset:', url, error);
+              });
+          }
+
+          return response;
+        }).catch((error) => {
+          console.error('Fetch failed for:', event.request.url, error);
+          
+          // Fallback untuk offline
+          if (event.request.destination === 'document') {
+            return caches.match('/index.html');
+          }
+          
+          // Untuk assets yang gagal, coba cari di cache dengan pattern matching
+          if (event.request.url.includes('/assets/')) {
+            return caches.open(CACHE_NAME).then(cache => {
+              return cache.keys().then(keys => {
+                // Cari file dengan nama yang mirip (tanpa hash)
+                const requestPath = new URL(event.request.url).pathname;
+                const fileName = requestPath.split('/').pop().split('.')[0];
+                const fileExt = requestPath.split('.').pop();
+                
+                for (let key of keys) {
+                  const keyPath = new URL(key.url).pathname;
+                  if (keyPath.includes(fileName) && keyPath.endsWith(`.${fileExt}`)) {
+                    return cache.match(key);
+                  }
+                }
+                return null;
+              });
+            });
+          }
+          
+          throw error;
+        });
       })
   );
-}); 
+});

@@ -1,3 +1,4 @@
 APP_URL=<url_aplikasi>
 MAP_SERVICE_API_KEY=<api_key>
 Map Service API Key: BCCs2eonMI-6H2ctvFaWg-UYdDv387Vno_bzUzALpB442r2lCnsHmtrx8biyPi_E-1fSGABK_Qs_GlvPoJJqxbk
+URL Hasil Deploy= https://remarkable-vacherin-8d60e9.netlify.app/ 
