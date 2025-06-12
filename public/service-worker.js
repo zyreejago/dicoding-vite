@@ -1,12 +1,17 @@
 // Cache name
 const CACHE_NAME = 'story-app-v1';
 
-// Assets to cache - hanya cache file yang pasti ada
+// Assets to cache - tambahkan file CSS dan JS utama
 const urlsToCache = [
   '/',
   '/index.html',
   '/images/icon-192x192.png',
-  '/images/badge-72x72.png'
+  '/images/badge-72x72.png',
+  // Tambahkan file CSS dan JS utama
+  '/src/styles/main.css',
+  '/src/styles/styles.css',
+  '/src/scripts/index.js',
+  '/src/scripts/app.js'
 ];
 
 // Service Worker Lifecycle Events
@@ -18,13 +23,11 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return Promise.allSettled(
-          urlsToCache.map(url => 
-            cache.add(url).catch(error => {
-              console.error(`Failed to cache ${url}:`, error);
-            })
-          )
-        );
+        // Cache semua file sekaligus
+        return cache.addAll(urlsToCache);
+      })
+      .catch(error => {
+        console.error('Failed to cache files:', error);
       })
   );
 });
@@ -173,12 +176,22 @@ self.addEventListener('fetch', (event) => {
         }).catch((error) => {
           console.error('Fetch failed for:', event.request.url, error);
           
-          // Fallback untuk offline
+          // Fallback untuk dokumen HTML
           if (event.request.destination === 'document') {
             return caches.match('/index.html');
           }
           
-          // Untuk assets yang gagal, coba cari di cache dengan pattern matching
+          // Fallback untuk CSS
+          if (event.request.destination === 'style') {
+            return caches.match('/src/styles/main.css');
+          }
+          
+          // Fallback untuk JavaScript
+          if (event.request.destination === 'script') {
+            return caches.match('/src/scripts/index.js');
+          }
+          
+          // Untuk assets lainnya, gunakan pattern matching yang sudah ada
           if (event.request.url.includes('/assets/')) {
             return caches.open(CACHE_NAME).then(cache => {
               return cache.keys().then(keys => {
