@@ -1,4 +1,3 @@
-// Service Worker Lifecycle Events
 self.addEventListener('install', (event) => {
   console.log('Service Worker installing...');
   // Skip waiting to activate immediately
@@ -25,8 +24,8 @@ self.addEventListener('push', function(event) {
     
     const options = {
       body: data.options.body,
-      icon: '/src/images/icon-192x192.png',
-      badge: '/src/images/badge-72x72.png',
+      icon: '/images/icon-192x192.png',
+      badge: '/images/badge-72x72.png',
       vibrate: [100, 50, 100],
       data: {
         dateOfArrival: Date.now(),
@@ -36,12 +35,12 @@ self.addEventListener('push', function(event) {
         {
           action: 'explore',
           title: 'Lihat Cerita',
-          icon: '/src/images/checkmark.png'
+          icon: '/images/checkmark.png'
         },
         {
           action: 'close',
           title: 'Tutup',
-          icon: '/src/images/xmark.png'
+          icon: '/images/xmark.png'
         }
       ]
     };
@@ -64,4 +63,4 @@ self.addEventListener('notificationclick', function(event) {
       clients.openWindow('/')
     );
   }
-}); 
+});

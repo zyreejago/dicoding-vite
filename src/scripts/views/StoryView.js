@@ -860,10 +860,20 @@ setupRegisterFormHandler(onSubmit) {
 setupNotificationButtonHandler(onToggle) {
   const button = document.querySelector('#notificationButton');
   if (button) {
-    button.addEventListener('click', async (e) => {
+    // Hapus event listener yang ada sebelum menambahkan yang baru
+    const existingHandler = button._notificationHandler;
+    if (existingHandler) {
+      button.removeEventListener('click', existingHandler);
+    }
+    
+    // Buat handler baru dan simpan referensinya
+    const newHandler = async (e) => {
       e.preventDefault();
       if (onToggle) await onToggle();
-    });
+    };
+    
+    button._notificationHandler = newHandler;
+    button.addEventListener('click', newHandler);
   }
 }
 
