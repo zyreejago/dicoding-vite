@@ -62,13 +62,15 @@ self.addEventListener('push', (event) => {
     const data = event.data.json();
     console.log('Push data:', data);
 
+    // Perbaikan: Validasi struktur data dan berikan fallback
     const options = {
-      body: data.options.body,
+      body: data.body || data.options?.body || 'Notifikasi baru',
       icon: '/images/icon-192x192.png',
       badge: '/images/badge-72x72.png',
       vibrate: [100, 50, 100],
       data: {
-        url: data.options.data.url
+        // Perbaikan: Cek multiple kemungkinan struktur data
+        url: data.url || data.options?.url || data.options?.data?.url || '/'
       },
       actions: [
         {
@@ -84,11 +86,24 @@ self.addEventListener('push', (event) => {
 
     console.log('Showing notification with options:', options);
     
+    // Perbaikan: Validasi title
+    const title = data.title || 'Notifikasi';
+    
     event.waitUntil(
-      self.registration.showNotification(data.title, options)
+      self.registration.showNotification(title, options)
     );
   } catch (error) {
     console.error('Error handling push event:', error);
+    
+    // Fallback notification jika parsing gagal
+    event.waitUntil(
+      self.registration.showNotification('Notifikasi', {
+        body: 'Ada notifikasi baru untuk Anda',
+        icon: '/images/icon-192x192.png',
+        badge: '/images/badge-72x72.png',
+        data: { url: '/' }
+      })
+    );
   }
 });
 
