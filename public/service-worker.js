@@ -177,14 +177,18 @@ self.addEventListener('fetch', (event) => {
               url.endsWith('.gif') ||
               url.endsWith('.svg')) {
             
-            console.log('Caching asset:', url);
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              })
-              .catch(error => {
-                console.error('Failed to cache asset:', url, error);
-              });
+            // Pastikan URL menggunakan scheme yang didukung
+            const urlObj = new URL(url);
+            if (urlObj.protocol === 'http:' || urlObj.protocol === 'https:') {
+              console.log('Caching asset:', url);
+              caches.open(CACHE_NAME)
+                .then((cache) => {
+                  cache.put(event.request, responseToCache);
+                })
+                .catch(error => {
+                  console.error('Failed to cache asset:', url, error);
+                });
+            }
           }
 
           return response;

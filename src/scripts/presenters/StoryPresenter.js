@@ -112,6 +112,9 @@ export class StoryPresenter {
         this.view.renderRegisterForm();
         this.setupRegisterForm();
         break;
+      case '/saved':
+        await this.renderSavedStoriesPage();
+        break;
       default:
         if (hash.startsWith('/story/')) {
           const storyId = hash.split('/')[2];
@@ -426,6 +429,24 @@ export class StoryPresenter {
     } catch (error) {
       console.error('Error decoding base64 string for VAPID key:', base64String, error);
       throw new Error('Gagal mendekode VAPID key. Pastikan key valid.');
+    }
+  }
+
+  // Method untuk menampilkan halaman saved stories - PINDAHKAN KE DALAM CLASS
+  async renderSavedStoriesPage() {
+    try {
+      const savedStories = await StoryIdb.getStories();
+      this.view.renderSavedStoriesPage(savedStories);
+      
+      // Setup delete handler
+      this.view.setupDeleteSavedHandler(async (storyId) => {
+        await StoryIdb.deleteStory(storyId);
+        this.view.showSuccess('Cerita berhasil dihapus dari data tersimpan');
+        // Refresh halaman
+        await this.renderSavedStoriesPage();
+      });
+    } catch (error) {
+      this.view.showError('Gagal memuat data tersimpan');
     }
   }
 }

@@ -982,6 +982,101 @@ renderStoryDetail(story) {
     }
     return true;
   }
+
+  // Method untuk menampilkan halaman saved stories
+  renderSavedStoriesPage(savedStories) {
+    if (savedStories.length === 0) {
+      this.mainContent.innerHTML = `
+        <div class="saved-stories-container">
+          <h2><i class="fas fa-bookmark"></i> Data Tersimpan</h2>
+          <div class="no-saved-stories">
+            <i class="fas fa-folder-open" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
+            <p>Belum ada cerita yang disimpan</p>
+            <p style="font-size: 0.9rem; color: #999;">Simpan cerita favorit Anda untuk dibaca nanti</p>
+          </div>
+        </div>
+      `;
+      return;
+    }
+    
+    this.mainContent.innerHTML = `
+      <div class="saved-stories-container">
+        <h2><i class="fas fa-bookmark"></i> Data Tersimpan (${savedStories.length})</h2>
+        <div class="saved-stories-grid">
+          ${savedStories.map(story => `
+            <div class="story-card saved-card">
+              <div class="saved-badge">
+                <i class="fas fa-heart"></i> Tersimpan
+              </div>
+              <img src="${story.photoUrl}" alt="${story.description}" loading="lazy">
+              <div class="story-info">
+                <h3>${story.name}</h3>
+                <p>${story.description}</p>
+                <div class="story-meta">
+                  <small style="color: #999;">
+                    <i class="fas fa-calendar"></i> ${new Date(story.createdAt).toLocaleDateString('id-ID')}
+                  </small>
+                </div>
+                <div class="story-actions">
+                  <button class="view-story-btn" data-story-id="${story.id}">
+                    <i class="fas fa-eye"></i> Lihat Detail
+                  </button>
+                  <button class="delete-saved-btn" data-story-id="${story.id}">
+                    <i class="fas fa-trash-alt"></i> Hapus
+                  </button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // Method untuk setup delete handler
+  setupDeleteSavedHandler(onDelete) {
+    document.addEventListener('click', async (e) => {
+      if (e.target.closest('.delete-saved-btn')) {
+        const button = e.target.closest('.delete-saved-btn');
+        const storyId = button.dataset.storyId;
+        if (confirm('Yakin ingin menghapus cerita ini dari data tersimpan?')) {
+          if (onDelete) await onDelete(storyId);
+        }
+      }
+      
+      if (e.target.closest('.view-story-btn')) {
+        const button = e.target.closest('.view-story-btn');
+        const storyId = button.dataset.storyId;
+        window.location.hash = `/story/${storyId}`;
+      }
+    });
+  }
+
+  // Method untuk menampilkan pesan sukses
+  showSuccess(message) {
+    const successDiv = document.createElement('div');
+    successDiv.className = 'success-message';
+    successDiv.innerHTML = `✅ ${message}`;
+    successDiv.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
+      z-index: 1000;
+      font-size: 14px;
+    `;
+    
+    document.body.appendChild(successDiv);
+    
+    setTimeout(() => {
+      if (successDiv.parentNode) {
+        successDiv.parentNode.removeChild(successDiv);
+      }
+    }, 3000);
+  }
 }
 
 export { StoryView };

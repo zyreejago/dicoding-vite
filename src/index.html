@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Berbagi Cerita</title>
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#2196F3">
+    
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     
@@ -22,13 +26,15 @@
         <div class="nav-brand">
           <h1>Berbagi Cerita</h1>
         </div>
-        <div class="nav-menu">
-          <a href="#/" class="nav-link">Beranda</a>
-          <a href="#/add" class="nav-link">Tambah Cerita</a>
-          <a href="#/login" class="nav-link" id="loginLink">Masuk</a>
-          <a href="#/register" class="nav-link" id="registerLink">Daftar</a>
-          <button id="logoutButton" class="nav-button" style="display: none;">Keluar</button>
-        </div>
+        <!-- Di bagian nav-menu -->
+        <nav class="nav-menu">
+          <a href="#/" class="nav-link">🏠 Beranda</a>
+          <a href="#/add" class="nav-link" style="display: none;">➕ Tambah Cerita</a>
+          <a href="#/saved" class="nav-link">💾 Data Tersimpan</a>
+          <a href="#/login" id="loginLink" class="nav-link">🔑 Masuk</a>
+          <a href="#/register" id="registerLink" class="nav-link">📝 Daftar</a>
+          <button id="logoutButton" class="nav-button" style="display: none;">🚪 Keluar</button>
+        </nav>
       </nav>
     </header>
 
